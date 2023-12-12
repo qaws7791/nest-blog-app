@@ -1,8 +1,18 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Noto_Sans_KR } from 'next/font/google'
 import './globals.css'
+import { cn } from '@/lib/utils'
+import Header from '@/components/header'
+import Provider from '@/components/provider'
 
-const inter = Inter({ subsets: ['latin'] })
+export const fontSans = Noto_Sans_KR({
+  weight: ['400', '500', '700', '800'],
+  style: 'normal',
+  display: 'swap',
+  preload: true,
+  subsets: ['latin'],
+  variable: '--font-sans',
+})
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -15,8 +25,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang='ko'>
+      <body
+        className={cn('bg-background font-sans antialiased', fontSans.variable)}
+      >
+        <Provider>
+          <Header />
+          <div className='mt-16'>{children}</div>
+        </Provider>
+      </body>
     </html>
   )
 }
