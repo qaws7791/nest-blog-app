@@ -18,6 +18,9 @@ module.exports = {
       },
     },
     extend: {
+      aspectRatio: {
+        '40/27': '40 / 27',
+      },
       fontFamily: {
         sans: ['var(--font-sans)', ...fontFamily.sans],
       },

@@ -1,0 +1,84 @@
+/* Quill Render 
+    1. h1 -> <h1>h1</h1>
+    2. h2 -> <h2>h2</h2>
+    3. bold -> <strong>bold</strong>
+    4. italic -> <em>em</em>
+    5. underline -> <u>underline</u>
+    6. strike -> <s>strike</s>
+    7. blockquote -> <blockquote>blockquote</blockquote>
+    8. ordered list -> <ol><li>list</li></ol>
+    8. unordered list -> <ul><li>list</li></ul>
+    9. link -> <a href="link">link</a>
+    10. image -> <img src="image" alt="image" />
+*/
+
+.ql-render {
+    font-size: 1em;
+    line-height: 1.5em;
+}
+
+.ql-render p {
+    font-size: 1em;
+    line-height: 1.5em;
+}
+
+.ql-render h1 {
+  font-size: 2em;
+  line-height: 1.5em;
+  font-weight: 400;
+  margin: 0;
+}
+
+.ql-render h2 {
+    font-size: 1.5em;
+    line-height: 1.5em;
+    font-weight: 400;
+    margin: 0;
+}
+
+.ql-render strong {
+    font-weight: bolder;
+}
+
+.ql-render em {
+    font-style: italic;
+}
+
+.ql-render u {
+    text-decoration: underline;
+}
+
+.ql-render s {
+    text-decoration: line-through;
+}
+
+.ql-render blockquote {
+    margin: 0;
+    padding-left: 1em;
+    border-left: 0.25em solid #ccc;
+}
+
+.ql-render ol {
+    list-style: decimal;
+    margin: 0;
+    padding-left: 2em;
+}
+
+.ql-render ul {
+    margin: 0;
+    list-style: disc;
+    padding-left: 2em;
+}
+
+.ql-render a {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.ql-render img {
+    max-width: 100%;
+    height: auto;
+}
+
+
+

@@ -27,6 +27,8 @@ import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import useLoginMutation from '@/lib/tanstack/mutations/useLoginMutation'
+import getCurrentUser from '@/api/users/getCurrentUser'
+import useUserStore from '@/stores/useUserStore'
 
 interface UserLoginFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -47,13 +49,12 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values)
     setIsLoading(true)
-    loginMutation.mutate(values)
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
+    await loginMutation.mutateAsync(values)
+    const { data: userData } = await getCurrentUser()
+    useUserStore.getState().setUser(userData)
   }
 
   return (

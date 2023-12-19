@@ -11,6 +11,14 @@ export const checkAndSetAccessToken = (config: InternalAxiosRequestConfig) => {
   return newConfig
 }
 
+export const handleApiUrl = (config: InternalAxiosRequestConfig) => {
+  const newConfig = { ...config }
+  if (typeof window === 'undefined') {
+    newConfig.baseURL = process.env.NEXT_PUBLIC_API_URL
+  }
+  return newConfig
+}
+
 export const handleTokenError = async (error: AxiosError) => {
   const originalRequest = error.config
 

@@ -2,14 +2,11 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from './ui/button'
-import { useState } from 'react'
-import {
-  List,
-  MagnifyingGlass,
-  MagnifyingGlassPlus,
-  X,
-} from '@phosphor-icons/react'
+import { useEffect, useState } from 'react'
+import { List, MagnifyingGlass, X } from '@phosphor-icons/react'
 import { Input } from './ui/input'
+import { usePathname } from 'next/navigation'
+import useAuthStore from '@/stores/useAuthStore'
 
 type Category = {
   name: string
@@ -28,8 +25,10 @@ const CATEGORY_LIST: Category[] = [
 ]
 
 const Header = () => {
+  const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const { accessToken } = useAuthStore()
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -39,8 +38,21 @@ const Header = () => {
     setIsSearchOpen(!isSearchOpen)
   }
 
+  useEffect(() => {
+    if (isMenuOpen || isSearchOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMenuOpen, isSearchOpen])
+
+  useEffect(() => {
+    setIsMenuOpen(false)
+    setIsSearchOpen(false)
+  }, [pathname])
+
   return (
-    <div className='border-b border-gray-200 h-14 bg-white fixed w-full left-0 top-0'>
+    <div className='border-b border-gray-200 h-14 bg-white fixed w-full left-0 top-0 z-50'>
       <nav className='flex justify-between items-center h-full mx-4 gap-2'>
         {isSearchOpen ? (
           <>
@@ -93,8 +105,8 @@ const Header = () => {
       </nav>
       <div className='bg-white'>
         {isMenuOpen && (
-          <div className='h-screen mb-[-60px]'>
-            <ul className='p-3 bg-white'>
+          <div className='flex flex-col justify-between h-screen px-6 pb-20'>
+            <ul className='p-z bg-white'>
               {CATEGORY_LIST.map((category) => (
                 <li key={category.href} className='p-3'>
                   <Link
@@ -106,6 +118,28 @@ const Header = () => {
                 </li>
               ))}
             </ul>
+            {accessToken ? (
+              <div className='flex flex-col gap-3 w-full'>
+                <Button asChild>
+                  <Link href='/write'>Write Post</Link>
+                </Button>
+                <Button variant='secondary'>Logout</Button>
+              </div>
+            ) : (
+              <div className='flex flex-col gap-3 w-full'>
+                <Button asChild>
+                  <Link
+                    href={`/login?${
+                      pathname !== 'login'
+                        ? `redirect=${window.location.href}`
+                        : ''
+                    }`}
+                  >
+                    Login
+                  </Link>
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>
