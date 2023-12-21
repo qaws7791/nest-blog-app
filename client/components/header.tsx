@@ -2,10 +2,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from './ui/button'
-import { useEffect, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { List, MagnifyingGlass, X } from '@phosphor-icons/react'
 import { Input } from './ui/input'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import useAuthStore from '@/stores/useAuthStore'
 
 type Category = {
@@ -13,29 +13,73 @@ type Category = {
   href: string
 }
 
-const CATEGORY_LIST: Category[] = [
-  { name: 'All', href: '' },
-  { name: 'Write', href: 'write' },
-  { name: 'Jewelry', href: 'jewelry' },
-  { name: 'Shoes', href: 'shoes' },
-  { name: 'Watches', href: 'watches' },
-  { name: 'Bags', href: 'bags' },
-  { name: 'Sunglasses', href: 'sunglasses' },
-  { name: 'Hats', href: 'hats' },
-]
+const CATEGORY_LIST: Category[] = [{ name: 'All', href: '/' }]
+
+const MenuList = () => {
+  return (
+    <ul className='p-z bg-white'>
+      {CATEGORY_LIST.map((category) => (
+        <li key={category.href} className='p-3'>
+          <Link href={`${category.href}`} className='bg-white'>
+            {category.name}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+const BottomMenu = () => {
+  const { accessToken } = useAuthStore()
+  const pathname = usePathname()
+
+  return (
+    <div className='flex flex-col gap-3 w-full'>
+      {accessToken ? (
+        <>
+          <Button asChild>
+            <Link href='/write'>Write Post</Link>
+          </Button>
+          <Button variant='secondary'>Logout</Button>
+        </>
+      ) : (
+        <Button asChild>
+          <Link
+            href={`/login?${
+              pathname !== 'login' ? `redirect=${window.location.href}` : ''
+            }`}
+          >
+            Login
+          </Link>
+        </Button>
+      )}
+    </div>
+  )
+}
 
 const Header = () => {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const { accessToken } = useAuthStore()
-
+  const router = useRouter()
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
 
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen)
+    if (!isSearchOpen) {
+      setTimeout(() => {
+        document.getElementById('search')?.focus()
+      }, 100)
+    }
+  }
+
+  const submitSearch = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const search = e.currentTarget.search.value
+    router.push(`/search?q=${search}`)
   }
 
   useEffect(() => {
@@ -56,15 +100,26 @@ const Header = () => {
       <nav className='flex justify-between items-center h-full mx-4 gap-2'>
         {isSearchOpen ? (
           <>
-            <label htmlFor='search' className='sr-only'>
-              아티클 검색
-            </label>
             <div className='w-full relative'>
               <MagnifyingGlass
                 size={20}
                 className='absolute top-1/2 left-2 -translate-y-1/2 text-muted-foreground'
               />
-              <Input placeholder='아티클 검색' className='indent-6' />
+              <form onSubmit={submitSearch} autoComplete='off'>
+                <label htmlFor='search' className='sr-only'>
+                  아티클 검색
+                </label>
+                <Input
+                  type='search'
+                  id='search'
+                  name='search'
+                  placeholder='아티클 검색'
+                  className='pl-8'
+                  autoComplete='off'
+                  minLength={1}
+                  maxLength={100}
+                />
+              </form>
             </div>
             <Button
               variant='ghost'
@@ -85,7 +140,6 @@ const Header = () => {
             <div className='flex gap-2'>
               {!isMenuOpen && (
                 <Button variant='ghost' size='icon' onClick={toggleSearch}>
-                  {/* <Icon name='search' /> */}
                   <MagnifyingGlass
                     size={24}
                     className='text-muted-foreground'
@@ -106,40 +160,8 @@ const Header = () => {
       <div className='bg-white'>
         {isMenuOpen && (
           <div className='flex flex-col justify-between h-screen px-6 pb-20'>
-            <ul className='p-z bg-white'>
-              {CATEGORY_LIST.map((category) => (
-                <li key={category.href} className='p-3'>
-                  <Link
-                    href={`/category/${category.href}`}
-                    className='bg-white'
-                  >
-                    {category.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            {accessToken ? (
-              <div className='flex flex-col gap-3 w-full'>
-                <Button asChild>
-                  <Link href='/write'>Write Post</Link>
-                </Button>
-                <Button variant='secondary'>Logout</Button>
-              </div>
-            ) : (
-              <div className='flex flex-col gap-3 w-full'>
-                <Button asChild>
-                  <Link
-                    href={`/login?${
-                      pathname !== 'login'
-                        ? `redirect=${window.location.href}`
-                        : ''
-                    }`}
-                  >
-                    Login
-                  </Link>
-                </Button>
-              </div>
-            )}
+            <MenuList />
+            <BottomMenu />
           </div>
         )}
       </div>

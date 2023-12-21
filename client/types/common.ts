@@ -64,7 +64,12 @@ export interface PostDetail extends Post {
   tags: Pick<Tags, 'id' | 'name'>[]
 }
 
-export interface Pagination<T> {
+export interface PaginationRequest {
+  page?: number
+  size?: number
+}
+
+export interface PaginationResponse<T> {
   results: T[]
   currentPage: number
   totalPages: number

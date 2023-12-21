@@ -45,7 +45,7 @@ const PostDetailPage = async ({ params }: PageProps) => {
       <div className='flex gap-2'>
         {data.tags.map((tag) => (
           <Badge variant='outline' key={tag.id} className='text-base'>
-            <Link href={`/tag/${tag.id}`}>{tag.name}</Link>
+            <Link href={`/tags/${tag.name}`}>{tag.name}</Link>
           </Badge>
         ))}
       </div>

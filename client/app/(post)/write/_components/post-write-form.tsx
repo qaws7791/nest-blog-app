@@ -82,12 +82,12 @@ const PostWriteForm = ({ post, submitMutation }: PostWriteFormProps) => {
     console.log(submitMutation)
     submitMutation.mutate(values)
   }
-  React.useEffect(() => {
-    const subscription = form.watch((value, { name, type }) =>
-      console.log(value, name, type)
-    )
-    return () => subscription.unsubscribe()
-  }, [form])
+  // React.useEffect(() => {
+  //   const subscription = form.watch((value, { name, type }) =>
+  //     console.log(value, name, type)
+  //   )
+  //   return () => subscription.unsubscribe()
+  // }, [form])
 
   const featuredImage = form.watch('featuredImage')
 

@@ -11,10 +11,12 @@ import {
 interface InputTagProps {
   value: string[]
   onChange: (value: string[]) => void
+  name?: string
+  id?: string
 }
 
 const InputTag = forwardRef<HTMLInputElement, InputTagProps>(
-  ({ value, onChange }, ref) => {
+  ({ value, onChange, name, id }, ref) => {
     const [tagInput, setTagInput] = useState('')
 
     const addTag = useCallback(() => {
@@ -35,6 +37,7 @@ const InputTag = forwardRef<HTMLInputElement, InputTagProps>(
     const onKeyDown = useCallback(
       (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
+          e.preventDefault()
           addTag()
           return
         }
@@ -51,7 +54,7 @@ const InputTag = forwardRef<HTMLInputElement, InputTagProps>(
     }, [])
 
     return (
-      <div className='border p-2'>
+      <div className='border border-input bg-background p-2 rounded-md'>
         <ul className='inline-flex gap-1 flex-wrap'>
           {value.map((tag, i) => (
             <li key={tag} className='inline-flex bg-primary px-2 py-1 rounded'>
@@ -64,7 +67,7 @@ const InputTag = forwardRef<HTMLInputElement, InputTagProps>(
                   removeTag(tag)
                 }}
               >
-                <XCircle size={24} color='#ffffff' weight='fill' />
+                <XCircle size={22} color='#ffffff' weight='fill' />
               </button>
             </li>
           ))}
@@ -77,6 +80,8 @@ const InputTag = forwardRef<HTMLInputElement, InputTagProps>(
               value={tagInput}
               className='w-24'
               ref={ref}
+              name={name}
+              id={id}
             />
           </li>
         </ul>

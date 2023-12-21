@@ -1,13 +1,17 @@
 import { AxiosPromise } from 'axios'
 import axiosInstance from '../config'
-import { Pagination, PostPreview } from '@/types/common'
+import {
+  PaginationRequest,
+  PaginationResponse,
+  PostPreview,
+} from '@/types/common'
 
-export interface getPostsRequest {
-  page: number
-  size: number
+export interface getPostsRequest extends PaginationRequest {
+  tag?: string
+  title?: string
 }
 
-interface getPostsResponse extends Pagination<PostPreview> {}
+interface getPostsResponse extends PaginationResponse<PostPreview> {}
 
 const getPosts = (params: getPostsRequest): AxiosPromise<getPostsResponse> => {
   return axiosInstance.get('/posts', {

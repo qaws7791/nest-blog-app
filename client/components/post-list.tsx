@@ -11,10 +11,10 @@ interface PostListProps {
 
 const PostList = async ({ posts }: PostListProps) => {
   return (
-    <div className='flex flex-col gap-8'>
+    <ul className='flex flex-col gap-8'>
       {posts.map((post) => (
-        <div key={post.id}>
-          <Link href={`/p/${post.id}`} className='flex gap-4'>
+        <li key={post.id}>
+          <Link href={`/post/${post.id}`} className='flex gap-4'>
             <div>
               <Image
                 src={post.featuredImage}
@@ -34,9 +34,9 @@ const PostList = async ({ posts }: PostListProps) => {
               </p>
             </div>
           </Link>
-        </div>
+        </li>
       ))}
-    </div>
+    </ul>
   )
 }
 

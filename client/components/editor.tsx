@@ -32,6 +32,8 @@ const CustomReactQuill = dynamic(
 interface EditorProps {
   value: string
   onChange: (value: string) => void
+  id?: string
+  name?: string
 }
 /**
  * 업로드 로직
@@ -119,6 +121,8 @@ const Editor = forwardRef<HTMLDivElement, EditorProps>((props, ref) => {
         onChange={onChange}
         formats={formats}
         modules={modules}
+        id={rest.id}
+        name={rest.name}
         {...rest}
       />
     </div>
