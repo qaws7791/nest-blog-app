@@ -7,10 +7,33 @@ import { formatDateString } from '@/lib/utils'
 import { Clock } from '@phosphor-icons/react/dist/ssr'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
+import { Metadata, ResolvingMetadata } from 'next'
 
 interface PageProps {
   params: {
     id: string
+  }
+}
+
+export async function generateMetadata(
+  { params }: PageProps,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  // read route params
+  const id = parseInt(params.id)
+
+  // fetch data
+  const { data } = await getPost({ id })
+
+  // optionally access and extend (rather than replace) parent metadata
+  const previousImages = (await parent).openGraph?.images || []
+
+  return {
+    title: `${data.title} - NextBlog`,
+    description: data.description,
+    openGraph: {
+      images: [data.featuredImage, ...previousImages],
+    },
   }
 }
 

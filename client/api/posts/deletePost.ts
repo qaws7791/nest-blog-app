@@ -1,6 +1,6 @@
 import { AxiosPromise } from 'axios'
 import axiosInstance from '../config'
-import { ApiDeleteResponse } from '@/types/common'
+import { ApiDeleteResponse } from '@/types/common.types'
 
 interface DeletePostResponse extends ApiDeleteResponse {}
 

@@ -33,11 +33,6 @@ export interface CommonModel {
   updatedAt: string
 }
 
-export interface Tags extends CommonModel {
-  id: number
-  name: string
-}
-
 export interface Post extends CommonModel {
   title: string
   description: string
@@ -51,6 +46,14 @@ export interface User extends CommonModel {
   role: RolesEnums
 }
 
+export interface Tag extends CommonModel {
+  name: string
+}
+
+export interface TagWithPostCount extends Pick<Tag, 'id' | 'name'> {
+  postCount: number
+}
+
 export interface PostPreview
   extends Pick<
     Post,
@@ -61,7 +64,7 @@ export interface PostPreview
 
 export interface PostDetail extends Post {
   author: Pick<User, 'id' | 'nickname' | 'email' | 'role'>
-  tags: Pick<Tags, 'id' | 'name'>[]
+  tags: Pick<Tag, 'id' | 'name'>[]
 }
 
 export interface PaginationRequest {

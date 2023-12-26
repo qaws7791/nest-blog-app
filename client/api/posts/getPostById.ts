@@ -1,6 +1,6 @@
 import { AxiosPromise } from 'axios'
 import axiosInstance from '../config'
-import { PostDetail } from '@/types/common'
+import { PostDetail } from '@/types/common.types'
 
 export interface getPostRequest {
   id: number

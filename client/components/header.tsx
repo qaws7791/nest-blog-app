@@ -7,13 +7,21 @@ import { List, MagnifyingGlass, X } from '@phosphor-icons/react'
 import { Input } from './ui/input'
 import { usePathname, useRouter } from 'next/navigation'
 import useAuthStore from '@/stores/useAuthStore'
+import useUserStore from '@/stores/useUserStore'
+import { useQueryClient } from '@tanstack/react-query'
 
 type Category = {
   name: string
   href: string
 }
 
-const CATEGORY_LIST: Category[] = [{ name: 'All', href: '/' }]
+const CATEGORY_LIST: Category[] = [
+  { name: 'Posts', href: '/' },
+  {
+    name: 'Tags',
+    href: '/tags',
+  },
+]
 
 const MenuList = () => {
   return (
@@ -30,9 +38,17 @@ const MenuList = () => {
 }
 
 const BottomMenu = () => {
-  const { accessToken } = useAuthStore()
+  const { accessToken, clearAccessToken } = useAuthStore()
+  const { clearUser } = useUserStore()
+  const queryClient = useQueryClient()
   const pathname = usePathname()
 
+  const handleLogout = () => {
+    clearAccessToken()
+    clearUser()
+    queryClient.clear()
+    window.alert('로그아웃 되었습니다.')
+  }
   return (
     <div className='flex flex-col gap-3 w-full'>
       {accessToken ? (
@@ -40,7 +56,9 @@ const BottomMenu = () => {
           <Button asChild>
             <Link href='/write'>Write Post</Link>
           </Button>
-          <Button variant='secondary'>Logout</Button>
+          <Button variant='secondary' onClick={handleLogout}>
+            Logout
+          </Button>
         </>
       ) : (
         <Button asChild>
@@ -57,12 +75,56 @@ const BottomMenu = () => {
   )
 }
 
+const SearchBar = ({ closeSearch }: { closeSearch: () => void }) => {
+  const router = useRouter()
+
+  const submitSearch = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const search = e.currentTarget.search.value
+    router.push(`/search?q=${search}`)
+  }
+
+  return (
+    <>
+      <div className='w-full relative'>
+        <MagnifyingGlass
+          size={20}
+          className='absolute top-1/2 left-2 -translate-y-1/2 text-muted-foreground'
+        />
+        <form onSubmit={submitSearch} autoComplete='off'>
+          <label htmlFor='search' className='sr-only'>
+            아티클 검색
+          </label>
+          <Input
+            type='search'
+            id='search'
+            name='search'
+            placeholder='아티클 검색'
+            className='pl-8'
+            autoComplete='off'
+            minLength={1}
+            maxLength={100}
+          />
+        </form>
+      </div>
+      <Button
+        variant='ghost'
+        onClick={closeSearch}
+        type='button'
+        className='text-muted-foreground hover:text-muted-foreground'
+      >
+        취소
+      </Button>
+    </>
+  )
+}
+
 const Header = () => {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const { accessToken } = useAuthStore()
-  const router = useRouter()
+  const { user } = useUserStore()
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
@@ -74,12 +136,6 @@ const Header = () => {
         document.getElementById('search')?.focus()
       }, 100)
     }
-  }
-
-  const submitSearch = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const search = e.currentTarget.search.value
-    router.push(`/search?q=${search}`)
   }
 
   useEffect(() => {
@@ -99,37 +155,7 @@ const Header = () => {
     <div className='border-b border-gray-200 h-14 bg-white fixed w-full left-0 top-0 z-50'>
       <nav className='flex justify-between items-center h-full mx-4 gap-2'>
         {isSearchOpen ? (
-          <>
-            <div className='w-full relative'>
-              <MagnifyingGlass
-                size={20}
-                className='absolute top-1/2 left-2 -translate-y-1/2 text-muted-foreground'
-              />
-              <form onSubmit={submitSearch} autoComplete='off'>
-                <label htmlFor='search' className='sr-only'>
-                  아티클 검색
-                </label>
-                <Input
-                  type='search'
-                  id='search'
-                  name='search'
-                  placeholder='아티클 검색'
-                  className='pl-8'
-                  autoComplete='off'
-                  minLength={1}
-                  maxLength={100}
-                />
-              </form>
-            </div>
-            <Button
-              variant='ghost'
-              onClick={toggleSearch}
-              type='button'
-              className='text-muted-foreground hover:text-muted-foreground'
-            >
-              취소
-            </Button>
-          </>
+          <SearchBar closeSearch={toggleSearch} />
         ) : (
           <>
             <div>
@@ -160,7 +186,18 @@ const Header = () => {
       <div className='bg-white'>
         {isMenuOpen && (
           <div className='flex flex-col justify-between h-screen px-6 pb-20'>
-            <MenuList />
+            <div>
+              <div className='border border-y-gray-300 rounded-md p-4'>
+                {user ? (
+                  <>
+                    Hello, <span>{user.nickname}</span>
+                  </>
+                ) : (
+                  <>Please login for more features.</>
+                )}
+              </div>
+              <MenuList />
+            </div>
             <BottomMenu />
           </div>
         )}

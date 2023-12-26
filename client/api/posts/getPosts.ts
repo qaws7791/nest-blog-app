@@ -4,7 +4,7 @@ import {
   PaginationRequest,
   PaginationResponse,
   PostPreview,
-} from '@/types/common'
+} from '@/types/common.types'
 
 export interface getPostsRequest extends PaginationRequest {
   tag?: string

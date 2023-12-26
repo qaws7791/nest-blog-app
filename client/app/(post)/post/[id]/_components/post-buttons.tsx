@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import useDeletePostMutation from '@/lib/tanstack/mutations/useDeletePostMutation'
 import useUserStore from '@/stores/useUserStore'
-import { PostDetail } from '@/types/common'
+import { PostDetail } from '@/types/common.types'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React from 'react'

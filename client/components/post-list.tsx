@@ -1,6 +1,6 @@
 import getPosts from '@/api/posts/getPosts'
 import { formatDateString } from '@/lib/utils'
-import { PostPreview } from '@/types/common'
+import { PostPreview } from '@/types/common.types'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'

@@ -53,8 +53,12 @@ export function UserLoginForm({ className, ...props }: UserLoginFormProps) {
     console.log(values)
     setIsLoading(true)
     await loginMutation.mutateAsync(values)
-    const { data: userData } = await getCurrentUser()
-    useUserStore.getState().setUser(userData)
+    try {
+      const { data: userData } = await getCurrentUser()
+      useUserStore.getState().setUser(userData)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (

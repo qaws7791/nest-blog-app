@@ -8,6 +8,7 @@ import {
 } from '@phosphor-icons/react/dist/ssr'
 import { usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import usePagination from '@/lib/hooks/usePagination'
 
 interface PaginationProps {
   page: number
@@ -17,6 +18,7 @@ interface PaginationProps {
 const Pagination = ({ page, totalPages }: PaginationProps) => {
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const pages = usePagination({ currentPage: page, totalPages })
 
   const getNewUrl = useCallback(
     (page: number) => {
@@ -27,91 +29,48 @@ const Pagination = ({ page, totalPages }: PaginationProps) => {
     [pathname, searchParams]
   )
 
-  const getPageButtons = useCallback(
-    (start: number, end: number) => {
-      return Array.from({ length: end - start + 1 }, (_, i) => start + i).map(
-        (p) => (
-          <Button key={p} variant={p === page ? 'secondary' : 'ghost'} asChild>
-            <Link href={getNewUrl(p)}>{p}</Link>
-          </Button>
-        )
-      )
-    },
-    [getNewUrl, page]
-  )
+  const getNavButton = useCallback(
+    (direction: 'left' | 'right') => {
+      const isLeft = direction === 'left'
+      const disabled = isLeft ? page <= 1 : page >= totalPages
+      const Icon = isLeft ? CaretLeft : CaretRight
+      const newPage = isLeft ? page - 1 : page + 1
 
-  const getNavButton = (direction: 'left' | 'right') => {
-    if (direction === 'left') {
       return (
         <Button
           variant='ghost'
           size='icon'
-          disabled={page < 2}
-          asChild={page >= 2}
+          disabled={disabled}
+          asChild={!disabled}
         >
-          {page > 1 ? (
-            <Link href={getNewUrl(page - 1)}>
-              <CaretLeft size={28} className='text-muted-foreground' />
-            </Link>
+          {disabled ? (
+            <Icon size={28} className='text-muted-foreground' />
           ) : (
-            <CaretLeft size={28} className='text-muted-foreground' />
+            <Link href={getNewUrl(newPage)}>
+              <Icon size={28} className='text-muted-foreground' />
+            </Link>
           )}
         </Button>
       )
-    }
-    return (
-      <Button
-        variant='ghost'
-        disabled={page >= totalPages}
-        asChild={page < totalPages}
-      >
-        {page < totalPages ? (
-          <Link href={getNewUrl(page + 1)}>
-            <CaretRight size={28} className='text-muted-foreground' />
-          </Link>
-        ) : (
-          <CaretRight size={28} className='text-muted-foreground' />
-        )}
-      </Button>
-    )
-  }
+    },
+    [getNewUrl, page, totalPages]
+  )
 
   return (
     <div className='flex justify-center space-x-2 items-center'>
       {getNavButton('left')}
-      {totalPages < 6 ? (
-        <>{getPageButtons(1, totalPages)}</>
-      ) : page < 4 ? (
-        <>
-          {getPageButtons(1, 3)}
-          <DotsThree size={28} className='text-muted-foreground' />
-          <Button variant='ghost' asChild>
-            <Link href={getNewUrl(totalPages)}>{totalPages}</Link>
+      {pages.map((p) => {
+        if (p === '...') {
+          return (
+            <DotsThree key={p} size={30} className='text-muted-foreground' />
+          )
+        }
+        return (
+          <Button key={p} variant={p === page ? 'secondary' : 'ghost'} asChild>
+            <Link href={getNewUrl(p)}>{p}</Link>
           </Button>
-        </>
-      ) : page > totalPages - 3 ? (
-        <>
-          <Button variant='ghost' asChild>
-            <Link href={getNewUrl(1)}>1</Link>
-          </Button>
-          <DotsThree size={28} className='text-muted-foreground' />
-          {getPageButtons(totalPages - 2, totalPages)}
-        </>
-      ) : (
-        <>
-          <Button variant='ghost' asChild>
-            <Link href={getNewUrl(1)}>1</Link>
-          </Button>
-          <DotsThree size={28} className='text-muted-foreground' />
-          <Button variant='secondary' asChild>
-            <Link href={getNewUrl(page)}>{page}</Link>
-          </Button>
-          <DotsThree size={28} className='text-muted-foreground' />
-          <Button variant='ghost' asChild>
-            <Link href={getNewUrl(totalPages)}>{totalPages}</Link>
-          </Button>
-        </>
-      )}
+        )
+      })}
       {getNavButton('right')}
     </div>
   )
